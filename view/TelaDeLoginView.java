@@ -4,41 +4,44 @@ import controller.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.*;
 import javax.swing.*;
 
-
-public class TelaDeLoginView extends JFrame{
-
+public class TelaDeLoginView extends JFrame {
     public static JLabel lblLogin;
-    public static JTextField txtLogin;   
+    public static JTextField txtLogin;
     public static JLabel lblSenha;
     public static JPasswordField txtSenha;
     public static JButton btnLogar;
     public static JLabel lblNotificacoes;
- 
-    public TelaDeLoginView(){
 
-        super("Tela De Login");
-        setLayout(new FlowLayout());
 
-        lblLogin = new JLabel("Login:");   //cria o texto "Login:"
-        add(lblLogin);   //adiciona (lblLogin) a (JFrame)
+    public static GridBagLayout gbLayout;
+    public static GridBagConstraints gbConstraints;
 
-        txtLogin = new JTextField(10);   //cria a barra de texto para login
-        add(txtLogin);   //adiciona (txtLogin) a (JFrame)
+    public TelaDeLoginView() {
+        super("Tela de Login");
+        gbLayout = new GridBagLayout();
+        setLayout(gbLayout);
+        gbConstraints = new GridBagConstraints();
 
-        lblSenha = new JLabel("Senha:");   //cria o texto "Senha:"
-        add(lblSenha);   //adiciona (lblSenha) a (JFrame)
+        lblLogin = new JLabel("Login:");
+        addComponent(lblLogin, 0, 0, 1, 1);
 
-        txtSenha = new JPasswordField(10);   //cria a barra de texto para senha
-        add(txtSenha);   //adiciona (txtSenha) a (JFrame)
+        txtLogin = new JTextField(10);
+        addComponent(txtLogin, 0, 1, 1, 1);
 
-        btnLogar = new JButton("Logar");   //cria o botão "Logar"
-        add(btnLogar);  //adiciona (btnLogar) a (JFrame)
+        lblSenha = new JLabel("Senha:");
+        addComponent(lblSenha, 1, 0, 1, 1);
 
-        lblNotificacoes = new JLabel("Notificações:"); //cria o texto "Notificações:"
-        add(lblNotificacoes); //adiciona (lblNotificacoes) a (JFrame)
+        txtSenha = new JPasswordField(10);
+        addComponent(txtSenha, 1, 1, 1, 1);
+
+        btnLogar = new JButton("Logar");
+        addComponent(btnLogar, 2, 0, 2, 1);
+
+        lblNotificacoes = new JLabel("Notificações", SwingConstants.CENTER);
+        // lblNotificacoes.setSize(getContentPane().getWidth(), 40);
+        addComponent(lblNotificacoes, 3, 0, 2, 1);
 
         ButtonHandler buttonHandler = new ButtonHandler();
         btnLogar.addActionListener(buttonHandler);
@@ -55,15 +58,33 @@ public class TelaDeLoginView extends JFrame{
                 }
             }
         );
+
+        setSize(170,140);
+        setVisible(true);
     }
-    
+
+    public void addComponent(Component component, int row, int column, int width, int height) {
+        if (height > 1 && width > 1) {
+            gbConstraints.fill = GridBagConstraints.BOTH;
+        } else if (height > 1) {
+            gbConstraints.fill = GridBagConstraints.VERTICAL;
+        } else {
+            gbConstraints.fill = GridBagConstraints.HORIZONTAL;
+        }
+        gbConstraints.gridy = row;
+        gbConstraints.gridx = column;
+        gbConstraints.gridwidth = width;
+        gbConstraints.gridheight = height;
+        gbLayout.setConstraints(component, gbConstraints);
+        add(component);
+    }
+
     private class ButtonHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
             TelaDeLoginController.logarController();
         }
     }
-
 
     public static String setHtmlFormat(String txt) {
         return "<html><body>" + txt + "</body></html>";
@@ -72,11 +93,23 @@ public class TelaDeLoginView extends JFrame{
     public static void notificarUsuario(String strTexto) {
         lblNotificacoes.setText(setHtmlFormat(strTexto));
     }
+
+    public static void verificarLarguraEAltura() { // checkFrameWidthHeight()
+        appTelaDeLoginView.getRootPane().addComponentListener(
+            new ComponentAdapter() {
+                public void componentResized(ComponentEvent e) {
+                    int larguraTela = appTelaDeLoginView.getWidth();
+                    int alturaTela = appTelaDeLoginView.getHeight();
+                    notificarUsuario(String.format("Largura: %s, Altura: %s", larguraTela, alturaTela));
+                }
+            }
+        );
+    }
+
     public static TelaDeLoginView appTelaDeLoginView;
     public static void main(String[] args) {
-        TelaDeLoginView appTelaDeLogin = new TelaDeLoginView();
-        appTelaDeLogin.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        appTelaDeLogin.setSize(600,100);
-        appTelaDeLogin.setVisible(true);
+        appTelaDeLoginView = new TelaDeLoginView();
+        appTelaDeLoginView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        // verificarLarguraEAltura();
     }
 }

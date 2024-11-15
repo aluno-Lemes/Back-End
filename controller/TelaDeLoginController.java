@@ -5,12 +5,11 @@ import model.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-
 import javax.swing.*;
+import java.util.*;
 
-public class TelaDeLoginController extends TelaDeLoginView{
-    public static void logarController(){
-        ArrayList<String> resultados = new ArrayList<>(TelaDeLoginModel.logarModel(txtLogin.getText(), String.valueOf(txtSenha.getPassword())));
+public class TelaDeLoginController extends TelaDeLoginView {
+    public static void logarController() {
+        ArrayList<String> resultados = new ArrayList<String>(TelaDeLoginModel.logarModel(txtLogin.getText(), String.valueOf(txtSenha.getPassword())));
     }
 }
