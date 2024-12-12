@@ -1,9 +1,7 @@
 package model;
 import controller.*;
+import view.InterfaceView;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 import java.sql.*;
 
 public class TelaDePesquisaModel {
@@ -12,6 +10,16 @@ public class TelaDePesquisaModel {
         if (TelaDePesquisaController.registroDePesquisa.length() > 0) {
             TelaDePesquisaController.clausulasDePesquisaComWhere = " where `nome` like '%" + TelaDePesquisaController.registroDePesquisa + "%' or `email` like '%" + TelaDePesquisaController.registroDePesquisa + "%'";
             TelaDePesquisaController.clausulasDePesquisaSemWhere = " and (`nome` like '%" + TelaDePesquisaController.registroDePesquisa + "%' or `email` like '%" + TelaDePesquisaController.registroDePesquisa + "%')";
+        }
+
+        try {
+            String strSqlRegistrarHistorico = "insert into `db_senac`.`tbl_historico` (`id_login`, `txt_historico`) values (" + InterfaceView.idLoginAtual + ", '" + pesquisa + "')";
+            Connection conexao = MySQLConnector.conectar();
+            Statement stmSqlRegistrarHistorico = conexao.createStatement();
+            stmSqlRegistrarHistorico.addBatch(strSqlRegistrarHistorico);
+            stmSqlRegistrarHistorico.executeBatch();
+        } catch (Exception e) {
+            System.err.println("Erro: " + e);
         }
         TelaDePesquisaController.vaParaPrimeiroRegistro();
     }
@@ -33,17 +41,17 @@ public class TelaDePesquisaModel {
             }
 
             if (rstSqlInicializacao.first()) {
-                TelaDePesquisaController.atualizarCampos(rstSqlInicializacao.getString("id"), rstSqlInicializacao.getString("nome"), rstSqlInicializacao.getString("email"));
-                TelaDePesquisaController.notificarUsuario("Foram encontrados \"" + qtdResultados + "\" registros. Primeiro registro posicionado com sucesso!");
+                TelaDePesquisaController.atualizarCampos(rstSqlInicializacao.getString("id"), rstSqlInicializacao.getString("nome"), rstSqlInicializacao.getString("email"), rstSqlInicializacao.getString("img"));
+                InterfaceView.notificarUsuario("Foram encontrados \"" + qtdResultados + "\" registros. Primeiro registro posicionado com sucesso!", TelaDePesquisaController.lblNotificacoes);
                 TelaDePesquisaController.habilitarAvancar();
             } else {
                 TelaDePesquisaController.limparCampos();
                 TelaDePesquisaController.desabilitarTodos();
-                TelaDePesquisaController.notificarUsuario("Não foram encontrados registros.");
+                InterfaceView.notificarUsuario("Não foram encontrados registros.", TelaDePesquisaController.lblNotificacoes);
             }
             stmSqlInicializacao.close();
         } catch (Exception e) {
-            TelaDePesquisaController.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.");
+            InterfaceView.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.", TelaDePesquisaController.lblNotificacoes);
             System.err.println("Erro: " + e);
         }
     }
@@ -55,16 +63,16 @@ public class TelaDePesquisaModel {
             Statement stmSqlProximoRegistro = conexao.createStatement();
             ResultSet rstSqlProximoRegistro = stmSqlProximoRegistro.executeQuery(strSqlProximoRegistro);
             if (rstSqlProximoRegistro.next()) {
-                TelaDePesquisaController.atualizarCampos(rstSqlProximoRegistro.getString("id"), rstSqlProximoRegistro.getString("nome"), rstSqlProximoRegistro.getString("email"));
-                TelaDePesquisaController.notificarUsuario("Próximo registro posicionado com sucesso!");
+                TelaDePesquisaController.atualizarCampos(rstSqlProximoRegistro.getString("id"), rstSqlProximoRegistro.getString("nome"), rstSqlProximoRegistro.getString("email"), rstSqlProximoRegistro.getString("img"));
+                InterfaceView.notificarUsuario("Próximo registro posicionado com sucesso!", TelaDePesquisaController.lblNotificacoes);
                 TelaDePesquisaController.habilitarTodos();
             } else {
                 TelaDePesquisaController.habilitarVoltar();
-                TelaDePesquisaController.notificarUsuario("Não foram encontrados registros adiante.");
+                InterfaceView.notificarUsuario("Não foram encontrados registros adiante.", TelaDePesquisaController.lblNotificacoes);
             }
             stmSqlProximoRegistro.close();
         } catch (Exception e) {
-            TelaDePesquisaController.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.");
+            InterfaceView.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.", TelaDePesquisaController.lblNotificacoes);
             System.err.println("Erro: " + e);
         }
     }
@@ -76,15 +84,15 @@ public class TelaDePesquisaModel {
             Statement stmSqlUltimoRegistro = conexao.createStatement();
             ResultSet rstSqlUltimoRegistro = stmSqlUltimoRegistro.executeQuery(strSqlUltimoRegistro);
             if (rstSqlUltimoRegistro.next()) {
-                TelaDePesquisaController.atualizarCampos(rstSqlUltimoRegistro.getString("id"), rstSqlUltimoRegistro.getString("nome"), rstSqlUltimoRegistro.getString("email"));
-                TelaDePesquisaController.notificarUsuario("Último registro posicionado com sucesso!");
+                TelaDePesquisaController.atualizarCampos(rstSqlUltimoRegistro.getString("id"), rstSqlUltimoRegistro.getString("nome"), rstSqlUltimoRegistro.getString("email"), rstSqlUltimoRegistro.getString("img"));
+                InterfaceView.notificarUsuario("Último registro posicionado com sucesso!", TelaDePesquisaController.lblNotificacoes);
                 TelaDePesquisaController.habilitarVoltar();
             } else {
-                TelaDePesquisaController.notificarUsuario("Não foram encontrados registros.");
+                InterfaceView.notificarUsuario("Não foram encontrados registros.", TelaDePesquisaController.lblNotificacoes);
             }
             stmSqlUltimoRegistro.close();
         } catch (Exception e) {
-            TelaDePesquisaController.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.");
+            InterfaceView.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.", TelaDePesquisaController.lblNotificacoes);
             System.err.println("Erro: " + e);
         }
     }
@@ -96,16 +104,16 @@ public class TelaDePesquisaModel {
             Statement stmSqlRegistroAnterior = conexao.createStatement();
             ResultSet rstSqlRegistroAnterior = stmSqlRegistroAnterior.executeQuery(strSqlRegistroAnterior);
             if (rstSqlRegistroAnterior.next()) {
-                TelaDePesquisaController.atualizarCampos(rstSqlRegistroAnterior.getString("id"), rstSqlRegistroAnterior.getString("nome"), rstSqlRegistroAnterior.getString("email"));
-                TelaDePesquisaController.notificarUsuario("Registro anterior posicionado com sucesso!");
+                TelaDePesquisaController.atualizarCampos(rstSqlRegistroAnterior.getString("id"), rstSqlRegistroAnterior.getString("nome"), rstSqlRegistroAnterior.getString("email"), rstSqlRegistroAnterior.getString("img"));
+                InterfaceView.notificarUsuario("Registro anterior posicionado com sucesso!", TelaDePesquisaController.lblNotificacoes);
                 TelaDePesquisaController.habilitarTodos();
             } else {
                 TelaDePesquisaController.habilitarAvancar();
-                TelaDePesquisaController.notificarUsuario("Não foram encontrados registros anteriores.");
+                InterfaceView.notificarUsuario("Não foram encontrados registros anteriores.", TelaDePesquisaController.lblNotificacoes);
             }
             stmSqlRegistroAnterior.close();
         } catch (Exception e) {
-            TelaDePesquisaController.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.");
+            InterfaceView.notificarUsuario("Ops! Houve um problema no servidor e não será possível inicializar os registros no momento. Por favor, retorne novamente mais tarde.", TelaDePesquisaController.lblNotificacoes);
             System.err.println("Erro: " + e);
         }
     }

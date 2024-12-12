@@ -1,5 +1,7 @@
 package view;
-import controller.*;
+/**
+ * import controller.*;
+ */
 
 import java.awt.*;
 import java.awt.event.*;
@@ -13,6 +15,7 @@ public class TelaDeMenuView extends JFrame {
     private final JMenuItem pesquisarItem;
     private final JMenuItem atualizarItem;
     private final JMenuItem removerItem;
+    private final JMenuItem sairItem;
 
     public TelaDeMenuView() {
         super("Tela de Menu");
@@ -25,11 +28,13 @@ public class TelaDeMenuView extends JFrame {
         pesquisarItem = new JMenuItem("Pesquisar");
         atualizarItem = new JMenuItem("Atualizar");
         removerItem = new JMenuItem("Remover");
+        sairItem = new JMenuItem("Sair");
 
         cadastroMenu.add(novoItem);
         cadastroMenu.add(pesquisarItem);
         cadastroMenu.add(atualizarItem);
         cadastroMenu.add(removerItem);
+        cadastroMenu.add(sairItem);
 
         menuBar.add(cadastroMenu);
 
@@ -108,13 +113,40 @@ public class TelaDeMenuView extends JFrame {
                 }
             }
         );
+
+        sairItem.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    System.out.println("Aqui ok");
+                    if (JOptionPane.showConfirmDialog(null, "Deseja mesmo sair do sistema?") == 0) {
+                        System.exit(0);
+                    }
+                }
+            }
+        );
+
+        setSize(300,300);
+        setVisible(true);
     }
 
     public static TelaDeMenuView appTelaDeMenuView;
     public static void main(String[] args) {
-        appTelaDeMenuView = new TelaDeMenuView();
-        appTelaDeMenuView.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        appTelaDeMenuView.setSize(200,200);
-        appTelaDeMenuView.setVisible(true);
+        // InterfaceView.idLoginAtual = "16";
+        if (InterfaceView.idLoginAtual.equals("")) {
+            TelaDeLoginView.appTelaDeLoginView = new TelaDeLoginView();
+            TelaDeLoginView.appTelaDeLoginView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        } else {
+            appTelaDeMenuView = new TelaDeMenuView();
+            appTelaDeMenuView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+            appTelaDeMenuView.addWindowListener(
+                new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        InterfaceView.removerImagensInuteis();
+                    }
+                }
+            );
+        }
     }
 }

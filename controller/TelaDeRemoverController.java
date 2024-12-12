@@ -1,14 +1,11 @@
 package controller;
 import view.*;
 import model.*;
-
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
+import java.awt.*;
 
 public class TelaDeRemoverController extends TelaDeRemoverView {
-    public static void removerController(){
+    public static void removerController() {
         TelaDeRemoverModel.removerModel(String.valueOf(cbxId.getSelectedItem()));
     }
 
@@ -20,7 +17,17 @@ public class TelaDeRemoverController extends TelaDeRemoverView {
         cbxId.addItem(str);
     }
 
-    public static void preencherCampos(String nome, String email) {
+    public static void preencherCampos(String nome, String email, String foto) {
+        if (foto != null) {
+            if (foto.length() > 0) {
+                lblFoto.setIcon(new ImageIcon(new ImageIcon(InterfaceView.localViewImgFolder + "\\" + foto).getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+            } else {
+                lblFoto.setIcon(new ImageIcon(new ImageIcon(InterfaceView.localViewFolder + "\\profile.png").getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+            }
+        } else {
+            lblFoto.setIcon(new ImageIcon(new ImageIcon(InterfaceView.localViewFolder + "\\profile.png").getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+        }
+
         txtNome.setText(nome);
         txtEmail.setText(email);
     }
@@ -29,4 +36,3 @@ public class TelaDeRemoverController extends TelaDeRemoverView {
         TelaDeRemoverModel.atualizarCamposModel(String.valueOf(cbxId.getSelectedItem()));
     }
 }
-

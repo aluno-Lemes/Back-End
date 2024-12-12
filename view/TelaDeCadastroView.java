@@ -6,6 +6,11 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class TelaDeCadastroView extends JFrame {
+    public static JLabel lblFoto;
+    public static JButton btnCarregarFoto;
+    public static JButton btnRemoverFoto;
+    public static String nomeArquivoFoto = "";
+
     public static JLabel lblNome;
     public static JTextField txtNome;
 
@@ -30,32 +35,42 @@ public class TelaDeCadastroView extends JFrame {
         setLayout(gbLayout);
         gbConstraints = new GridBagConstraints();
 
+        lblFoto = new JLabel("", SwingConstants.CENTER);
+        lblFoto.setIcon(new ImageIcon(new ImageIcon(InterfaceView.localViewFolder + "\\profile.png").getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+        InterfaceView.addComponent(lblFoto, 0, 0, 2, 2, gbLayout, gbConstraints, this);
+
+        btnCarregarFoto = new JButton("Carregar foto");
+        InterfaceView.addComponent(btnCarregarFoto, 2, 0, 1, 1, gbLayout, gbConstraints, this);
+
+        btnRemoverFoto = new JButton("Remover foto");
+        InterfaceView.addComponent(btnRemoverFoto, 2, 1, 1, 1, gbLayout, gbConstraints, this);
+
         lblNome = new JLabel("Nome:", SwingConstants.RIGHT);
-        addComponent(lblNome, 0, 0, 1, 1);
+        InterfaceView.addComponent(lblNome, 3, 0, 1, 1, gbLayout, gbConstraints, this);
 
         txtNome = new JTextField(10);
-        addComponent(txtNome, 0, 1, 1, 1);
+        InterfaceView.addComponent(txtNome, 3, 1, 1, 1, gbLayout, gbConstraints, this);
 
         lblEmail = new JLabel("Email:", SwingConstants.RIGHT);
-        addComponent(lblEmail, 1, 0, 1, 1);
+        InterfaceView.addComponent(lblEmail, 4, 0, 1, 1, gbLayout, gbConstraints, this);
 
         txtEmail = new JTextField(10);
-        addComponent(txtEmail, 1, 1, 1, 1);
+        InterfaceView.addComponent(txtEmail, 4, 1, 1, 1, gbLayout, gbConstraints, this);
 
         lblSenha = new JLabel("Senha:", SwingConstants.RIGHT);
-        addComponent(lblSenha, 2, 0, 1, 1);
+        InterfaceView.addComponent(lblSenha, 5, 0, 1, 1, gbLayout, gbConstraints, this);
 
         txtSenha = new JPasswordField(10);
-        addComponent(txtSenha, 2, 1, 1, 1);
+        InterfaceView.addComponent(txtSenha, 5, 1, 1, 1, gbLayout, gbConstraints, this);
 
         btnCadastrar = new JButton("Cadastrar");
-        addComponent(btnCadastrar, 3, 0, 1, 1);
+        InterfaceView.addComponent(btnCadastrar, 6, 0, 1, 1, gbLayout, gbConstraints, this);
 
         btnCancelar = new JButton("Cancelar");
-        addComponent(btnCancelar, 3, 1, 1, 1);
+        InterfaceView.addComponent(btnCancelar, 6, 1, 1, 1, gbLayout, gbConstraints, this);
 
         lblNotificacoes = new JLabel("Notificações", SwingConstants.CENTER);
-        addComponent(lblNotificacoes, 4, 0, 2, 1);
+        InterfaceView.addComponent(lblNotificacoes, 7, 0, 2, 1, gbLayout, gbConstraints, this);
 
         btnCadastrar.addActionListener(
             new ActionListener() {
@@ -69,6 +84,49 @@ public class TelaDeCadastroView extends JFrame {
 
                     if (txtEmail.getText().trim().length() == 0) {
                         lblNotificacoes.setText("É necessário digitar alguma coisa no campo Email. Por favor, digite um caracter válido no campo Email para prosseguir.");
+                        txtEmail.requestFocus();
+                        return;
+                    }
+
+                    if (txtEmail.getText().trim().indexOf('@') < 0) {
+                        lblNotificacoes.setText("É necessário digitar um @ no campo Email. Por favor, digite um @ no campo Email para prosseguir.");
+                        txtEmail.requestFocus();
+                        return;
+                    }
+
+                    if (txtEmail.getText().trim().indexOf('.') < 0) {
+                        lblNotificacoes.setText("É necessário digitar um . no campo Email. Por favor, digite um . no campo Email para prosseguir.");
+                        txtEmail.requestFocus();
+                        return;
+                    }
+
+                    if (txtEmail.getText().trim().length() < 10) {
+                        lblNotificacoes.setText("É necessário digitar no mínimo dez caracteres no campo Email. Por favor, digite no mínimo dez caracteres no campo Email para prosseguir.");
+                        txtEmail.requestFocus();
+                        return;
+                    }
+
+                    int antesDoArroba = txtEmail.getText().trim().lastIndexOf('@');
+                    String strAntesDoArroba = txtEmail.getText().trim().substring(0, antesDoArroba);
+
+                    if (strAntesDoArroba.length() < 3) {
+                        lblNotificacoes.setText("É necessário digitar no mínimo três caracteres antes do @ no campo Email. Por favor, digite no mínimo três caracteres antes do @ no campo Email para prosseguir.");
+                        txtEmail.requestFocus();
+                        return;
+                    }
+
+                    int antesDoPonto = txtEmail.getText().trim().lastIndexOf('.');
+
+                    if ((antesDoPonto - antesDoArroba) < 4) {
+                        lblNotificacoes.setText("É necessário digitar no mínimo três caracteres depois do @ e antes do . no campo Email. Por favor, digite no mínimo três caracteres depois do @ e antes do . no campo Email para prosseguir.");
+                        txtEmail.requestFocus();
+                        return;
+                    }
+
+                    String strDepoisDoPonto = txtEmail.getText().trim().substring(antesDoPonto + 1);
+
+                    if (strDepoisDoPonto.length() < 2) {
+                        lblNotificacoes.setText("É necessário digitar no mínimo dois caracteres depois do . no campo Email. Por favor, digite no mínimo dois caracteres depois do . no campo Email para prosseguir.");
                         txtEmail.requestFocus();
                         return;
                     }
@@ -88,56 +146,45 @@ public class TelaDeCadastroView extends JFrame {
             new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
-                    System.exit(0);
+                    TelaDeMenuView.appTelaDeMenuView.setVisible(true);
+                    dispose();
                 }
             }
         );
 
-        setSize(217,154);
+        btnCarregarFoto.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    TelaDeCadastroController.carregarFoto();
+                }
+            }
+        );
+
+        btnRemoverFoto.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    TelaDeCadastroController.removerFoto();
+                }
+            }
+        );
+
+        InterfaceView.definirIcone(this);
+        setSize(280,280);
         setVisible(true);
-    }
-
-    public void addComponent(Component component, int row, int column, int width, int height) {
-        if (height > 1 && width > 1) {
-            gbConstraints.fill = GridBagConstraints.BOTH;
-        } else if (height > 1) {
-            gbConstraints.fill = GridBagConstraints.VERTICAL;
-        } else {
-            gbConstraints.fill = GridBagConstraints.HORIZONTAL;
-        }
-        gbConstraints.gridy = row;
-        gbConstraints.gridx = column;
-        gbConstraints.gridwidth = width;
-        gbConstraints.gridheight = height;
-        // gbConstraints.insets = new Insets(1, 1, 1, 1); // sugestão de margem de elemento, crédios pro aluno Fernando
-        gbLayout.setConstraints(component, gbConstraints);
-        add(component);
-    }
-
-    public static void notificarUsuario(String txt) {
-        lblNotificacoes.setText(setHtmlFormat(txt));
-    }
-
-    public static String setHtmlFormat(String str) {
-        return "<html><body>" + str + "</body></html>";
-    }
-
-    public static void verificarLarguraEAltura() { // checkFrameWidthHeight()
-        appTelaDeCadastroView.getRootPane().addComponentListener(
-            new ComponentAdapter() {
-                public void componentResized(ComponentEvent e) {
-                    int larguraTela = appTelaDeCadastroView.getWidth();
-                    int alturaTela = appTelaDeCadastroView.getHeight();
-                    notificarUsuario(String.format("Largura: %s, Altura: %s", larguraTela, alturaTela));
-                }
-            }
-        );
     }
 
     public static TelaDeCadastroView appTelaDeCadastroView;
     public static void main(String[] args) {
-        appTelaDeCadastroView = new TelaDeCadastroView();
-        appTelaDeCadastroView.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        // verificarLarguraEAltura();
+        // InterfaceView.idLoginAtual = "16";
+        if (InterfaceView.idLoginAtual.equals("")) {
+            TelaDeLoginView.appTelaDeLoginView = new TelaDeLoginView();
+            TelaDeLoginView.appTelaDeLoginView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        } else {
+            appTelaDeCadastroView = new TelaDeCadastroView();
+            appTelaDeCadastroView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            // InterfaceView.verificarLarguraEAltura(appTelaDeAtualizacaoView,lblNotificacoes);
+        }
     }
 }

@@ -6,6 +6,11 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class TelaDeAtualizacaoView extends JFrame {
+    public static JLabel lblFoto;
+    public static JButton btnCarregarFoto;
+    public static JButton btnRemoverFoto;
+    public static String nomeArquivoFoto = "";
+
     public static JLabel lblId;
     public static JComboBox<String> cbxId;
 
@@ -35,42 +40,52 @@ public class TelaDeAtualizacaoView extends JFrame {
         setLayout(gbLayout);
         gbConstraints = new GridBagConstraints();
 
+        lblFoto = new JLabel("", SwingConstants.CENTER);
+        lblFoto.setIcon(new ImageIcon(new ImageIcon(InterfaceView.localViewFolder + "\\profile.png").getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+        InterfaceView.addComponent(lblFoto, 0, 0, 2, 2, gbLayout, gbConstraints, this);
+
+        btnCarregarFoto = new JButton("Carregar foto");
+        InterfaceView.addComponent(btnCarregarFoto, 2, 0, 1, 1, gbLayout, gbConstraints, this);
+
+        btnRemoverFoto = new JButton("Remover foto");
+        InterfaceView.addComponent(btnRemoverFoto, 2, 1, 1, 1, gbLayout, gbConstraints, this);
+
         lblId = new JLabel("Id:", SwingConstants.RIGHT);
-        addComponent(lblId, 0, 0, 1, 1);
+        InterfaceView.addComponent(lblId, 3, 0, 1, 1, gbLayout, gbConstraints, this);
 
         cbxId = new JComboBox<String>();
         TelaDeAtualizacaoController.popularCbxIdController();
-        addComponent(cbxId, 0, 1, 1, 1);
+        InterfaceView.addComponent(cbxId, 3, 1, 1, 1, gbLayout, gbConstraints, this);
 
         lblNome = new JLabel("Nome:", SwingConstants.RIGHT);
-        addComponent(lblNome, 1, 0, 1, 1);
+        InterfaceView.addComponent(lblNome, 4, 0, 1, 1, gbLayout, gbConstraints, this);
 
         txtNome = new JTextField(10);
-        addComponent(txtNome, 1, 1, 1, 1);
+        InterfaceView.addComponent(txtNome, 4, 1, 1, 1, gbLayout, gbConstraints, this);
 
         lblEmail = new JLabel("Email:", SwingConstants.RIGHT);
-        addComponent(lblEmail, 2, 0, 1, 1);
+        InterfaceView.addComponent(lblEmail, 5, 0, 1, 1, gbLayout, gbConstraints, this);
 
         txtEmail = new JTextField(10);
-        addComponent(txtEmail, 2, 1, 1, 1);
+        InterfaceView.addComponent(txtEmail, 5, 1, 1, 1, gbLayout, gbConstraints, this);
 
         TelaDeAtualizacaoController.atualizarCamposController();
 
         lblSenha = new JLabel("Senha:", SwingConstants.RIGHT);
-        addComponent(lblSenha, 3, 0, 1, 1);
+        InterfaceView.addComponent(lblSenha, 6, 0, 1, 1, gbLayout, gbConstraints, this);
 
         txtSenha = new JPasswordField(10);
-        addComponent(txtSenha, 3, 1, 1, 1);
+        InterfaceView.addComponent(txtSenha, 6, 1, 1, 1, gbLayout, gbConstraints, this);
 
         btnAtualizar = new JButton("Atualizar");
         btnAtualizar.setEnabled(false);
-        addComponent(btnAtualizar, 4, 0, 1, 1);
+        InterfaceView.addComponent(btnAtualizar, 7, 0, 1, 1, gbLayout, gbConstraints, this);
 
         btnCancelar = new JButton("Cancelar");
-        addComponent(btnCancelar, 4, 1, 1, 1);
+        InterfaceView.addComponent(btnCancelar, 7, 1, 1, 1, gbLayout, gbConstraints, this);
 
         lblNotificacoes = new JLabel("Notificações", SwingConstants.CENTER);
-        addComponent(lblNotificacoes, 5, 0, 2, 1);
+        InterfaceView.addComponent(lblNotificacoes, 8, 0, 2, 1, gbLayout, gbConstraints, this);
 
         cbxId.addItemListener(
             new ItemListener() {
@@ -143,37 +158,48 @@ public class TelaDeAtualizacaoView extends JFrame {
             }
         );
 
-        setSize(206,200);
+        btnCancelar.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    TelaDeMenuView.appTelaDeMenuView.setVisible(true);
+                    dispose();
+                }
+            }
+        );
+
+        btnCarregarFoto.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    TelaDeAtualizacaoController.carregarFoto();
+                }
+            }
+        );
+
+        btnRemoverFoto.addActionListener(
+            new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    TelaDeAtualizacaoController.removerFoto();
+                }
+            }
+        );
+
+        setSize(350,350);
         setVisible(true);
-    }
-
-    public void addComponent(Component component, int row, int column, int width, int height) {
-        if (height > 1 && width > 1) {
-            gbConstraints.fill = GridBagConstraints.BOTH;
-        } else if (height > 1) {
-            gbConstraints.fill = GridBagConstraints.VERTICAL;
-        } else {
-            gbConstraints.fill = GridBagConstraints.HORIZONTAL;
-        }
-        gbConstraints.gridy = row;
-        gbConstraints.gridx = column;
-        gbConstraints.gridwidth = width;
-        gbConstraints.gridheight = height;
-        gbLayout.setConstraints(component, gbConstraints);
-        add(component);
-    }
-
-    public static void notificarUsuario(String str) {
-        lblNotificacoes.setText(setHtmlFormat(str));
-    }
-
-    public static String setHtmlFormat(String str) {
-        return "<html><body>" + str + "</body></html>";
     }
 
     public static TelaDeAtualizacaoView appTelaDeAtualizacaoView;
     public static void main(String[] args) {
-        appTelaDeAtualizacaoView = new TelaDeAtualizacaoView();
-        appTelaDeAtualizacaoView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        // InterfaceView.idLoginAtual = "16";
+        if (InterfaceView.idLoginAtual.equals("")) {
+            TelaDeLoginView.appTelaDeLoginView = new TelaDeLoginView();
+            TelaDeLoginView.appTelaDeLoginView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        } else {
+            appTelaDeAtualizacaoView = new TelaDeAtualizacaoView();
+            appTelaDeAtualizacaoView.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            // InterfaceView.verificarLarguraEAltura(appTelaDeAtualizacaoView,lblNotificacoes);
+        }
     }
 }
